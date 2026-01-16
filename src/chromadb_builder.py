@@ -243,7 +243,7 @@ class AlzheimerKnowledgeBase:
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
-    DATA_DIR = BASE_DIR / "data_processing" / "data"
+    DATA_DIR = BASE_DIR / "data" / "data_processing"
     CHROMA_DB_DIR = BASE_DIR / "data" / "chroma_db" 
     print("\n" + "="*70)
     print("🔨 BUILDING KB: WITH LLM CLEANING")

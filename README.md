@@ -2,6 +2,10 @@
 
 Domain-specific retrieval-augmented generation (RAG) pipeline optimized for biomedical literature. The system prioritizes precision regarding specific biological entities (proteins, genes) through a hybrid search architecture and metadata-aware re-ranking
 
+## Usage showcase
+
+![](https://github.com/effes3/alzheimerRAG/use_showcase.gif)
+
 ## Configuration
 
 Runtime behavior is controlled via environment variables
@@ -112,3 +116,4 @@ Ground truth generation utilized **Google NotebookLM** (Gemini 1.5 Pro). The mod
 
 **Ingestion Bottleneck:**
 Context Recall (0.58) identifies the extraction layer as the primary point of failure. Complex PDF layouts (multi-column, floating figures) result in fragmented text chunks. This structural noise degrades embedding quality regardless of the retrieval strategy.
+

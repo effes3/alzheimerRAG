@@ -1,0 +1,33 @@
+# PDF processing
+pdfplumber
+
+# LangChain + RAG
+langchain-core
+langchain-community
+langchain-huggingface
+langchain-text-splitters
+langchain-chroma
+langchain-openai
+
+# Vector DB + Embeddings
+chromadb
+sentence-transformers
+transformers
+rank-bm25
+
+# LLM API
+requests
+openai
+python-dotenv
+pydantic
+
+# Streamlit UI
+streamlit
+
+#Utils
+wordcloud
+matplotlib
+tqdm
+pandas
+numpy
+ragas

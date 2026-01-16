@@ -1,0 +1,28 @@
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.python*
+python*
+build/
+dist/
+wheels/
+*.egg-info/
+.ruff_cache/
+
+### Environments ###
+.venv/
+env/
+venv/
+ENV/
+.env
+
+### Database ###
+data/chromadb/
+
+### Tools & IDEs ###
+.vscode/
+.idea/
+.DS_Store
+uv*

@@ -32,7 +32,7 @@ class AlzheimerKnowledgeBase:
 
         self.embeddings = HuggingFaceEmbeddings(
             model_name=model_name,
-            model_kwargs={'device': 'cuda' if torch.cuda.is_avalaible() else 'cpu'},
+            model_kwargs={'device': 'cpu'},
             encode_kwargs={'normalize_embeddings': True}
         )
         

@@ -11,6 +11,7 @@ from rank_bm25 import BM25Okapi
 import pickle
 import os
 import shutil
+import torch
 
 class AlzheimerKnowledgeBase:
     def __init__(
@@ -31,7 +32,7 @@ class AlzheimerKnowledgeBase:
 
         self.embeddings = HuggingFaceEmbeddings(
             model_name=model_name,
-            model_kwargs={'device': 'cpu'},
+            model_kwargs={'device': 'cuda' if torch.cuda.is_avalaible() else 'cpu'},
             encode_kwargs={'normalize_embeddings': True}
         )
         
@@ -243,7 +244,7 @@ class AlzheimerKnowledgeBase:
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
-    DATA_DIR = BASE_DIR / "data" / "data_processing"
+    DATA_DIR = BASE_DIR / "data_processing" / "data"
     CHROMA_DB_DIR = BASE_DIR / "data" / "chroma_db" 
     print("\n" + "="*70)
     print("🔨 BUILDING KB: WITH LLM CLEANING")

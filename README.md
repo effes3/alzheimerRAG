@@ -1,10 +1,14 @@
 # ALZHEIMER RESEARCH RAG
 
+[![Python](https://img.shields.io/badge/Python-3.13-blue)](https://www.python.org/)
+[![RAG](https://img.shields.io/badge/RAG-Hybrid-orange)]()
+[![Built with](https://img.shields.io/badge/Built%20with-Streamlit-red)](https://streamlit.io/)
+
 Domain-specific retrieval-augmented generation (RAG) pipeline optimized for biomedical literature. The system prioritizes precision regarding specific biological entities (proteins, genes) through a hybrid search architecture and metadata-aware re-ranking
 
 ## Usage showcase
 
-![](https://github.com/effes3/alzheimerRAG/use_showcase.gif)
+![](use_showcase.gif)
 
 ## Configuration
 
@@ -26,7 +30,7 @@ Dependency resolution utilizes `uv` for deterministic builds and optimal perform
 
 ```bash
 # Initialize
-git clone https://github.com/effes3/alzheimer_rag.git
+git clone https://github.com/effes3/alzheimerRAG.git
 cd alzheimer_rag
 
 # Sync dependencies and environment
@@ -43,7 +47,7 @@ uv run streamlit run src/app.py
 
 ```bash
 # Setup
-git clone https://github.com/effes3/alzheimer_rag.git
+git clone https://github.com/effes3/alzheimerRag.git
 cd alzheimer_rag
 
 # Environment
@@ -116,4 +120,5 @@ Ground truth generation utilized **Google NotebookLM** (Gemini 1.5 Pro). The mod
 
 **Ingestion Bottleneck:**
 Context Recall (0.58) identifies the extraction layer as the primary point of failure. Complex PDF layouts (multi-column, floating figures) result in fragmented text chunks. This structural noise degrades embedding quality regardless of the retrieval strategy.
+
 

@@ -38,7 +38,7 @@ RAG_MODEL_NAME="arcee-ai/trinity-mini:free"
 ```
 
 ### 3. Installation & Execution
-We use `uv` for deterministic environment assembly
+I use `uv` for deterministic environment assembly
 
 **Option A: via `uv` (Recommended)**
 ```bash
@@ -136,4 +136,5 @@ $$
 *   **Semi-Automated Ingestion:** Entity extraction is currently implemented via the Grok web interface; a full transition to API is planned
 
 </details>
+
 

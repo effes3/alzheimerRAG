@@ -4,6 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue)](https://www.python.org/)
 [![Architecture](https://img.shields.io/badge/Architecture-Hybrid%20Search-orange)]()
+[![Shell](https://img.shields.io/badge/Shell-Scripting-lightgrey)](https://www.shellscript.sh/)
 [![Built with](https://img.shields.io/badge/Built%20with-Streamlit-red)](https://streamlit.io/)
 
 **A high-precision search tool for biomedical literature**  
@@ -136,5 +137,6 @@ $$
 *   **Semi-Automated Ingestion:** Entity extraction is currently implemented via the Grok web interface; a full transition to API is planned
 
 </details>
+
 
 

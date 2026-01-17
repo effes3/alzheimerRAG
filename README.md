@@ -150,7 +150,7 @@ You can find this dataset in code from `evaluate.py`
 *   🔧 **Advanced Ingestion:** Implement Parent-Child Chunking to preserve the context of small fragments
 *   🖼️ **Vision-Language Models:** Transition to VLM (e.g., ColPali) for extracting data from tables and graphs
 *   🌐 **GraphRAG Integration:** Use knowledge graphs to map gene-pathology relationships
-*   🧪 **Fine-tuned PubMedBERT:** Retrain the model on a narrow corpus of articles on Alzheimer's disease
+*   🧪 **Domain-Specific Re-ranking:** Integrate PubMed-trained rerankers (e.g., NeuML/biomedbert-base-reranker) to improve the Precision of the retrieved context before passing it to the Generator
 
 ---
 
@@ -172,5 +172,6 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 

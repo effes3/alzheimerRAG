@@ -14,7 +14,6 @@ A domain-specific RAG pipeline optimized for high-precision biomedical literatur
 ## 🚀 Quick Start
 
 ### Prerequisites
-*   **Data Source:** Ensure raw PDFs are located in `data/raw/` (Sample data included in repo)
 *   **API Keys:** This project uses OpenRouter to access LLMs
 
 ### Configuration
@@ -173,3 +172,4 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 
 *   **Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   **Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
+

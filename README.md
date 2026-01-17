@@ -1,124 +1,175 @@
-# ALZHEIMER RESEARCH RAG
+# AlzheimerRAG: Precision Biomedical Retrieval
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue)](https://www.python.org/)
-[![RAG](https://img.shields.io/badge/RAG-Hybrid-orange)]()
+[![Architecture](https://img.shields.io/badge/Architecture-Hybrid%20Search-orange)]()
 [![Built with](https://img.shields.io/badge/Built%20with-Streamlit-red)](https://streamlit.io/)
 
-Domain-specific retrieval-augmented generation (RAG) pipeline optimized for biomedical literature. The system prioritizes precision regarding specific biological entities (proteins, genes) through a hybrid search architecture and metadata-aware re-ranking
+A domain-specific RAG pipeline optimized for high-precision biomedical literature retrieval. Unlike standard semantic search, this system solves the **specificity-recall trade-off** (e.g., distinguishing *APOE3* from *APOE4*) by implementing metadata-aware re-ranking and a weighted hybrid search architecture
 
-## Usage showcase
+### Usage Showcase
+![Application Demo](use_showcase.gif)
 
-![](use_showcase.gif)
+---
 
-## Configuration
+## 🚀 Quick Start
 
-Runtime behavior is controlled via environment variables
+### Prerequisites
+*   **Data Source:** Ensure raw PDFs are located in `data/raw/` (Sample data included in repo)
+*   **API Keys:** This project uses OpenRouter to access LLMs
 
-1.  Copy `.env.example` to `.env`
-2.  Populate the required keys
+### Configuration
+1.  Copy the example environment file:
+    ```bash
+    cp .env.example .env
+    ```
+2.  Add your API key to `.env`:
+    ```bash
+    OPENROUTER_API_KEY="sk-or-v1-..."
+    RAG_MODEL_NAME="arcee-ai/trinity-mini:free"
+    ```
 
+### Installation & Execution
+We use `uv` for deterministic builds
+
+**Option A: uv (Recommended)**
 ```bash
-OPENROUTER_API_KEY="sk-or-v1-..."
-RAG_MODEL_NAME="arcee-ai/trinity-mini:free"
-```
-
-## Installation & Run
-
-Dependency resolution utilizes `uv` for deterministic builds and optimal performance
-
-### Option A: uv (Primary)
-
-```bash
-# Initialize
+# 1. Clone & Sync
 git clone https://github.com/effes3/alzheimerRAG.git
-cd alzheimer_rag
-
-# Sync dependencies and environment
+cd alzheimerRAG
 uv sync
 
-# Indexing
+# 2. Build Vector Index (Extracts entities & embeds text)
 uv run python src/chromadb_builder.py
 
-# Execution
+# 3. Launch UI
 uv run streamlit run src/app.py
 ```
 
-### Option B: pip (Legacy)
+<details>
+<summary><strong>Option B: pip (Legacy/Standard)</strong></summary>
 
 ```bash
-# Setup
-git clone https://github.com/effes3/alzheimerRag.git
-cd alzheimer_rag
+git clone https://github.com/effes3/alzheimerRAG.git
+cd alzheimerRAG
 
-# Environment
 python -m venv .venv
 source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
-
-# Installation
 pip install -r requirements.txt
 
-# Indexing & Execution
 python src/chromadb_builder.py
 streamlit run src/app.py
 ```
+</details>
 
-## Retrieval Architecture
+---
 
-The core pipeline implements a **Hybrid Search** strategy to resolve the specificity-recall trade-off inherent in biomedical embedding models. Standard dense retrievers often fail to distinguish between semantically similar but functionally distinct entities (e.g., *APOE3* vs. *APOE4*)
+## 📂 Project tree (with no DB initialized yet)
 
-### Scoring Logic
+```bash
+alzheimerRAG/
+├── data/
+│   ├── alzheimer_papers/
+│   │   ├── metadata.json (metadata of each article)
+│   │   └── pmcids.txt # PMCID of each article (used for script that parses PDFs from PubMed)
+│   └── data_processing/
+│       ├── entities/
+│       │   └── [25 files: *.json] (.json-files of PDFs where are entities for each article)
+│       ├── merged/
+│       │   ├── no_llm/
+│       │   │   └── [24 files: *.json] (.json-files of PDFs with no using LLM as text-cleaner)
+│       │   └── with_llm/
+│       │       └── [24 files: *.json] (.json-files of PDFs with using LLM as text-cleaner)
+│       ├── pdfs/
+│       │   └── [24 files: *.pdf] (parsed pdfs from PubMed OA)
+│       ├── pdfs_clean/
+│       │   └── [24 files: *.pdf] (parsed pdfs from PubMed OA without article and references)
+│       └── texts/
+│           ├── texts_clean_no_llm/
+│           │   └── [24 files: *.json] (temp files to make merged/)
+│           └── texts_clean_w_llm/
+│               └── [24 files: *.json] (temp files to make merged/)
+├── pyproject.toml
+├── README.md
+├── requirements.txt
+├── results/
+│   ├── rag_evaluation_hsearch_funcscore.csv
+│   ├── rag_evaluation_hsearch_funcscore_hyde.csv
+│   └── rag_evaluation_vsearch_funcscore.csv
+├── scripts/
+│   ├── dataprep.py (make metadata collection)
+│   ├── eda.ipynb
+│   ├── ext.py (extract PubMed CIDs from metadata)
+│   ├── merge_text_w_entities.py (merge text with entities that were extracted PDFs using GUI Grok)
+│   ├── pdf2text.py (extract text from downloaded PDFs)
+│   └── selen.py (script to download PDFs)
+└── src/
+    ├── app.py
+    ├── chromadb_builder.py
+    └── evaluate.py
+    └── rag_agent.py
+```
 
-Document relevance ($d$) is computed via a weighted linear combination of dense vector similarity and sparse keyword matching, amplified by entity presence
+If you want to test script to parse PubMed CIDs, run `parsing.sh` from root directory (`~/alzheimerRAG/`)
+  
+---
+
+## 🧬 Retrieval Architecture
+
+Standard dense retrievers often fail to distinguish between semantically similar but functionally distinct entities. This pipeline implements a **Hybrid Search** strategy with a custom scoring formula
+
+### The Scoring Logic
+Relevance ($$Score(d)$$) is a weighted linear combination of **Semantic Density** ($$S_{vec}$$) and **Lexical Exactness** ($$S_{bm25}$$), amplified by a **Metadata Boost**
 
 $$
-Score(d) = \left[ \alpha \left(1 - \frac{S_{vec}}{Max_{vec}}\right) + (1-\alpha) \left(\frac{S_{bm25}}{Max_{bm25}}\right) \right] \times \text{Boost}(Entities)
+Score(d) = \underbrace{\left[ \alpha \left(1 - \frac{S_{vec}}{Max_{vec}}\right) + (1-\alpha) \left(\frac{S_{bm25}}{Max_{bm25}}\right) \right]}_{\text{Hybrid Base Score}} \times \underbrace{\text{Boost}(Entities)}_{\text{Metadata Multiplier}}
 $$
 
-| Component | Implementation | Function |
+| Component | Implementation | Why it matters |
 | :--- | :--- | :--- |
-| **$S_{vec}$** | `NeuML/pubmedbert-base-embeddings` | Captures conceptual semantic alignment. |
-| **$S_{bm25}$** | **BM25Okapi** | Enforces exact term matching for specific nomenclature. |
-| **$\alpha$** | Float (Default: 0.7) | Tuning parameter balancing semantic vs. lexical weight. |
-| **Boost** | Metadata Multiplier | Amplifies scores when query entities match document metadata. |
+| **$S_{vec}$** | `NeuML/pubmedbert` | Captures conceptual alignment (the "gist") |
+| **$S_{bm25}$** | **BM25Okapi** | Enforces exact term matching (the "nomenclature") |
+| **Boost** | Metadata Injection | Multiplies score if query entities (Genes, Proteins) match doc metadata |
 
 ### Entity-Aware Re-ranking
+1.  **Extraction:** Grok extracts key entities (e.g., "Amyloid-beta") during ingestion
+2.  **Injection:** Entities are serialized as metadata in ChromaDB
+3.  **Boost:** Queries containing these entities trigger the boost, prioritizing "deep dive" documents over general mentions
 
-1.  **Extraction:** Key biological entities (genes, treatments, proteins) are extracted from raw text via the Grok interface during ingestion
-2.  **Injection:** Entities are serialized as metadata within the vector store
-3.  **Execution:** Queries containing known entities trigger the boost mechanism, prioritizing documents explicitly analyzing the target subject over general references
+---
 
-Refer to `eda.ipynb` for distribution analysis of extracted entities
+## 📊 Performance Evaluation
 
-## Performance Metrics
+Benchmarks were conducted using the **Ragas** framework against a synthetic test set generated by **Google NotebookLM**
 
-Evaluation was conducted using the **Ragas** framework on a synthetic test set derived from domain literature
+*   **Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-2-27b-it` | Query Expansion: `qwen3-4b`
 
-**infrastructure:**
-*   **Judge:** `gpt-4o-mini`
-*   **Generator:** `google/gemma-2-27b-it`
-*   **Query Expansion:** `qwen/qwen3-4b`
+### Results@10
 
-**Results@10:**
-
-| Architecture | Faithfulness | Answer Relevancy | Context Precision | Context Recall | Latency (s) |
+| Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Vector Search + Entity Boost** | **0.816** | **0.410** | **0.706** | **0.579** | **9.80** |
-| Hybrid Search + Entity Boost | 0.800 | 0.367 | **0.706** | **0.579** | 11.25 |
-| Hybrid + HyDE + Entity Boost | 0.777 | 0.310 | 0.596 | 0.421 | 14.79 |
+| **Vector + Entity Boost** 🏆 | **0.816** | **0.410** | **0.706** | **0.579** | **9.80** |
+| Hybrid + Entity Boost | 0.800 | 0.367 | **0.706** | **0.579** | 11.25 |
+| Hybrid + HyDE + Boost | 0.777 | 0.310 | 0.596 | 0.421 | 14.79 |
 
-### Analysis
+### Key Findings
+1.  **Simplicity Wins:** The **Vector + Entity Boost** configuration outperformed complex hybrid setups, delivering the highest Faithfulness (0.816) with the lowest latency
+2.  **HyDE is Noisy:** Hypothetical Document Embeddings (HyDE) actively degraded performance by hallucinating biomedical context not present in the source text
+3.  **The "Recall Ceiling":** The shared Recall cap (0.579) across models points to an ingestion bottleneck rather than a retrieval failure
 
-1.  **Vector Search + Entity Boost** is the optimal configuration, delivering superior Faithfulness (0.816) and Relevancy (0.410) with the lowest latency
-2.  **HyDE (Hypothetical Document Embeddings)** introduced significant noise. The query expansion mechanism tended to hallucinate biomedical context, degrading both precision and latency (+3.54s)
-3.  **Hybrid Search** provided no statistical advantage over pure vector search when entity boosting was active, indicating the boosting mechanism successfully proxies the specificity benefits usually sought via BM25
+---
 
-### Evaluation Dataset
+## 🔮 Future Roadmap
 
-Ground truth generation utilized **Google NotebookLM** (Gemini 1.5 Pro). The model was constrained to generate Q&A pairs strictly from uploaded PDF contexts to minimize external knowledge contamination
+Based on the evaluation benchmarks, the next phase focuses on breaking the "Recall Ceiling" and improving noise filtration:
 
-## Known Constraints
+*   **Advanced Ingestion Strategy:** Implementation of **Parent-Child Chunking** to retain the context of small snippets, addressing the ingestion bottleneck
+*   **Vision-Language Models (VLM):** Replacing standard PDF parsing with VLM-based extraction (e.g., ColPali) to better capture data from biomedical tables and charts, which are currently lost
+*   **GraphRAG Integration:** Moving beyond vector similarity to a Knowledge Graph approach to better map relationships between genes (APOE4) and pathologies (Amyloid plaques)
+*   **Fine-tuned Embedding Model:** Fine-tuning `PubMedBERT` specifically on Alzheimer's pathology abstracts to improve domain separation
 
-**Ingestion Bottleneck:**
-Context Recall (0.58) identifies the extraction layer as the primary point of failure. Complex PDF layouts (multi-column, floating figures) result in fragmented text chunks. This structural noise degrades embedding quality regardless of the retrieval strategy.
+---
 
+## ⚠️ Limitations & Disclaimer
 
+*   **Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
+*   **Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials

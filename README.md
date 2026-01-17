@@ -3,6 +3,7 @@
 # AlzheimerRAG 🧬 Precision Biomedical Retrieval
 
 [![Python](https://img.shields.io/badge/Python-3.13-blue)](https://www.python.org/)
+[![Parser](https://img.shields.io/badge/Parser-Docling-red?logo=googlesheets&logoColor=white)](https://ds4sd.github.io/docling/)
 [![Architecture](https://img.shields.io/badge/Architecture-Hybrid%20Search-orange)]()
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20HF-Dataset-yellow)](https://huggingface.co/datasets/effes3/AlzheimerDB)
 [![Shell](https://img.shields.io/badge/Shell-Scripting-lightgrey)](https://www.shellscript.sh/)
@@ -77,7 +78,7 @@ alzheimerRAG/
 ├── data/           # PDFs, extracted texts, and entity annotations
 ├── scripts/        # Data processing and EDA scripts
 ├── src/            # Main application and retriever logic
-├── results/        # Reports and evaluation results
+├── results_pdf2text/        # Reports and evaluation results
 ├── README.md
 ├── requirements.txt
 └── pyproject.toml
@@ -91,21 +92,30 @@ alzheimerRAG/
 ```mermaid
 graph TD
     A[User Query] --> B{Pipeline}
-    B --> C[Vector Search: NeuML/pubmedbert-base-embeddings]
+    
+    subgraph Server with T4
+    K[Raw PDFs] --> L[Docling: Layout Analysis]
+    L --> M[Structured Markdown]
+    end
+
+    B --> C[Vector Search: PubMedBERT]
     B --> D[Lexical Search: BM25]
+    A --> E[HyDE: Hypothetical Abstract]
+    
+    E --> C
     
     subgraph Entity Intelligence
-    A --> E[NER: Entity Extraction]
-    E --> F[Metadata Filter & Entity Boost]
+    A --> F[NER: Entity Extraction]
+    F --> G[Metadata Filter & Entity Boost]
     end
     
-    C --> G[Hybrid Fusion]
-    D --> G
-    F --> G
+    C --> H[Hybrid Fusion]
+    D --> H
+    G --> H
     
-    G --> H[Top-K Context]
-    H --> I[Generator: gemma-3-27b-it]
-    I --> J[Precise Biological Answer]
+    H --> I[Context Window]
+    I --> J[Generator: Gemma-3-27b-it]
+    J --> N[Precise Biological Answer]
 ```
 
 Hybrid search combines **Semantic Density** and **Lexical Exactness**, enhanced by the **Metadata Injection** mechanism
@@ -131,8 +141,10 @@ The evaluation dataset was synthetically generated using a "LLM-as-a-Researcher"
 
 You can find this dataset in code from `evaluate.py`
 
-**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | Query Expansion: `qwen3-4b`
+**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | HyDE and NER from Query: `google/gemma-3n-e4b-it:free`
 
+> results of RAG on DB created by cleaning texts from PDFs via LLM
+> 
 | Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Vector + Entity Boost** 🏆 | **0.816** | **0.410** | **0.706** | **0.579** | **9.80** |
@@ -144,13 +156,27 @@ You can find this dataset in code from `evaluate.py`
 2. **HyDE is noisy:** Using hypothetical embeddings worsened metrics due to hallucinations in the biomedical context
 3. **Recall Ceiling:** The identical recall ceiling indicates a bottleneck in the ingestion stage rather than retrieval
 
+But after implementing **Docling** to process PDFs, the system achieved a massive leap in **Faithfulness** and **Recall** with same **Infrastructure**
+
+> results of RAG on DB created by .md files via Docling
+> 
+| Architecture | Faithfulness | Relevancy | Recall | Latency (s) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Vector + Entity Boost** 🏆 | 0.935 | **0.709** | 0.789 | **8.50** |
+| **Hybrid + Entity Boost** | 0.938 | 0.682 | 0.778 | 14.94 |
+| **Hybrid + HyDE + Entity Boost** 🏆 | **0.956** | 0.614 | **0.895** | 19.33 |
+
+**Key insights:**
+1.  **HyDE for Discovery:** Using HyDE (Hypothetical Document Embeddings) increased **Recall to ~90%**, making it the best mode for identifying hidden drug targets
+2.  **Docling Effect:** Faithfulness scores above **0.93** indicate that the LLM has almost stopped hallucinating, as it now receives perfectly structured table data
+3.  **The Specificity Win:** Metadata-based Entity Boosting ensures that *APOE4* related queries prioritize chunks explicitly tagged with that isoform
+
 ---
 
 ## 🔮 Future Roadmap
-*   🔧 **Advanced Ingestion:** Implement Parent-Child Chunking to preserve the context of small fragments
-*   🖼️ **Vision-Language Models:** Transition to VLM (e.g., ColPali) for extracting data from tables and graphs
-*   🌐 **GraphRAG Integration:** Use knowledge graphs to map gene-pathology relationships
-*   🧪 **Domain-Specific Re-ranking:** Integrate PubMed-trained rerankers (e.g., NeuML/biomedbert-base-reranker) to improve the Precision of the retrieved context before passing it to the Generator
+*   🧪 **Domain-Specific Re-ranking:** Integrating `cross-encoders` trained on PubMed to further refine the Top-K
+*   🌐 **GraphRAG:** Transitioning to a knowledge-graph-based retrieval to map complex gene-protein-disease pathways
+*   🛠️ **Automated NER Pipeline:** Full integration of the Entity Extraction step into the ingestion workflow via [MARCUS](https://chemrxiv.org/engage/chemrxiv/article-details/686b86cb1a8f9bdab5017104) or specialized LLMs
 
 ---
 
@@ -158,9 +184,8 @@ You can find this dataset in code from `evaluate.py`
 <details>
 <summary>Click to expand</summary>
 
-*   **Dataset Constraints:** The evaluation was performed on a network of 24 papers. The behaviour may change on million-scale samples
-*   **Table Parsing:** The current pipeline ignores statistical tables
-*   **Semi-Automated Ingestion:** Entity extraction is currently implemented via the Grok web interface; a full transition to API is planned
+*   **Pilot Dataset Scale:** The current evaluation was performed on a high-quality pilot network of 24 papers. While the architecture is scalable, behavior may shift when moving to million-scale document collections (requiring HNSW or DiskANN indexing)
+*   **Distributed Ingestion Workflow:** To maintain high performance without local GPU costs, document parsing (via Docling) is currently performed in a Google Colab environment. A unified, server-side ingestion API is planned for the next release
 
 </details>
 
@@ -172,6 +197,8 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
+
 
 
 

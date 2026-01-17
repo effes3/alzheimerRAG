@@ -31,7 +31,6 @@ A domain-specific RAG pipeline optimized for high-precision biomedical literatur
   - [Key Findings](#key-findings)
 - [Future Roadmap](#-future-roadmap)
 - [Limitations & Disclaimer](#-limitations--disclaimer)
-```
 
 ---
 
@@ -195,6 +194,7 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 *   **Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   **Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
 *   **Semi-Automated Ingestion:** To optimize costs during the development phase, the Entity Extraction step currently relies on manual batch processing via the Grok web interface. In a production environment, this would be replaced by a programmatic API call (e.g., OpenAI/Anthropic) or a fine-tuned local NER model to ensure fully automated, end-to-end reproducibility. For a detailed breakdown of the prompting strategy and extraction workflow used, please refer to eda.ipynb
+
 
 
 

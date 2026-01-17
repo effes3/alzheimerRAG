@@ -11,6 +11,30 @@ A domain-specific RAG pipeline optimized for high-precision biomedical literatur
 
 ---
 
+## Table of Contents / Navigation
+
+- [Project Title & Badges](#alzheimerrag-precision-biomedical-retrieval)
+- [Project Description (Abstract)](#alzheimerrag-precision-biomedical-retrieval)
+- [Usage Showcase](#usage-showcase)
+- [Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Configuration](#configuration)
+  - [Installation & Execution](#installation--execution)
+    - [Option A: uv](#installation--execution)
+    - [Option B: pip](#installation--execution)
+- [Project Tree](#-project-tree-with-no-db-initialized-yet)
+- [Retrieval Architecture](#-retrieval-architecture)
+  - [The Scoring Logic (Formulas)](#the-scoring-logic)
+  - [Entity-Aware Re-ranking](#entity-aware-re-ranking)
+- [Performance Evaluation](#-performance-evaluation)
+  - [Results@10 Table](#results10)
+  - [Key Findings](#key-findings)
+- [Future Roadmap](#-future-roadmap)
+- [Limitations & Disclaimer](#-limitations--disclaimer)
+```
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -171,6 +195,7 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 *   **Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   **Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
 *   **Semi-Automated Ingestion:** To optimize costs during the development phase, the Entity Extraction step currently relies on manual batch processing via the Grok web interface. In a production environment, this would be replaced by a programmatic API call (e.g., OpenAI/Anthropic) or a fine-tuned local NER model to ensure fully automated, end-to-end reproducibility. For a detailed breakdown of the prompting strategy and extraction workflow used, please refer to eda.ipynb
+
 
 
 

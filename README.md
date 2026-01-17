@@ -98,7 +98,7 @@ alzheimerRAG/
 │   ├── dataprep.py (make metadata collection)
 │   ├── eda.ipynb (eda pipeline)
 │   ├── ext.py (extract PubMed CIDs from metadata)
-│   ├── merge_text_w_entities.py (merge text with entities that were extracted PDFs using GUI Grok)
+│   ├── merge_text_w_entities.py (merge text with entities from the semi-automated extraction pipeline)
 │   ├── pdf2text.py (extract text from downloaded PDFs)
 │   └── selen.py (script to download PDFs)
 └── src/
@@ -171,5 +171,6 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 *   **Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   **Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
 *   **Semi-Automated Ingestion:** To optimize costs during the development phase, the Entity Extraction step currently relies on manual batch processing via the Grok web interface. In a production environment, this would be replaced by a programmatic API call (e.g., OpenAI/Anthropic) or a fine-tuned local NER model to ensure fully automated, end-to-end reproducibility. For a detailed breakdown of the prompting strategy and extraction workflow used, please refer to eda.ipynb
+
 
 

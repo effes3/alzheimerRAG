@@ -88,6 +88,26 @@ alzheimerRAG/
 
 ## 🧬 Retrieval Architecture
 
+```mermaid
+graph TD
+    A[User Query] --> B{Pipeline}
+    B --> C[Vector Search: NeuML/pubmedbert-base-embeddings]
+    B --> D[Lexical Search: BM25]
+    
+    subgraph Entity Intelligence
+    A --> E[NER: Entity Extraction]
+    E --> F[Metadata Filter & Entity Boost]
+    end
+    
+    C --> G[Hybrid Fusion]
+    D --> G
+    F --> G
+    
+    G --> H[Top-K Context]
+    H --> I[Generator: Gemma-2-27b]
+    I --> J[Precise Biological Answer]
+```
+
 Hybrid search combines **Semantic Density** and **Lexical Exactness**, enhanced by the **Metadata Injection** mechanism
 
 ### Scoring Logic
@@ -107,13 +127,17 @@ $$
 
 ## 📊 Performance Evaluation (Results@10)
 
+The evaluation dataset was synthetically generated using a "LLM-as-a-Researcher" pipeline (via NotebookLM). The goal was to create complex, multi-document queries that require cross-referencing information
+
+You can find this dataset in code from `evaluate.py`
+
 **Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-2-27b-it` | Query Expansion: `qwen3-4b`
 
 | Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Vector + Entity Boost** 🏆 | **0.816** | **0.410** | **0.706** | **0.579** | **9.80** |
 | Hybrid + Entity Boost | 0.800 | 0.367 | 0.706 | 0.579 | 11.25 |
-| Hybrid + HyDE + Boost | 0.777 | 0.310 | 0.596 | 0.421 | 14.79 |
+| Hybrid + HyDE + Entity Boost | 0.777 | 0.310 | 0.596 | 0.421 | 14.79 |
 
 **Key insights:**
 1. **Simplicity wins:** The Vector + Entity Boost configuration showed the best faithfulness with minimal latency
@@ -148,4 +172,5 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 

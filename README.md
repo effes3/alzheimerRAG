@@ -141,7 +141,7 @@ alzheimerRAG/
 Standard dense retrievers often fail to distinguish between semantically similar but functionally distinct entities. This pipeline implements a **Hybrid Search** strategy with a custom scoring formula
 
 ### The Scoring Logic
-Relevance ($Score(d)$) is a weighted linear combination of **Semantic Density** ($S_{vec}$) and **Lexical Exactness** ($S_{bm25}$), amplified by a **Metadata Boost**.
+Relevance ($$Score(d)$$) is a weighted linear combination of **Semantic Density** ($S_{vec}$) and **Lexical Exactness** ($S_{bm25}$), amplified by a **Metadata Boost**.
 
 $$
 Score(d) = \underbrace{\left[ \alpha \left(1 - \frac{S_{\text{vec}}}{Max_{\text{vec}}}\right) + (1-\alpha) \left(\frac{S_{\text{bm25}}}{Max_{\text{bm25}}}\right) \right]}_{\text{Hybrid Base Score}} \times \underbrace{\text{Boost}(Entities)}_{\text{Metadata Multiplier}}
@@ -192,6 +192,7 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 *   <a id="lim-dataset"></a>**Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   <a id="lim-tables"></a>**Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
 *   <a id="lim-ingestion"></a>**Semi-Automated Ingestion:** To optimize costs during the development phase, the Entity Extraction step currently relies on manual batch processing via the Grok web interface. In a production environment, this would be replaced by a programmatic API call (e.g., OpenAI/Anthropic) or a fine-tuned local NER model to ensure fully automated, end-to-end reproducibility. For a detailed breakdown of the prompting strategy and extraction workflow used, please refer to eda.ipynb
+
 
 
 

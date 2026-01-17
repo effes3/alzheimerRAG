@@ -153,11 +153,6 @@ $$
 | $S_{bm25}$ | **BM25Okapi** | Enforces exact term matching (the "nomenclature") |
 | **Boost** | Metadata Injection | Multiplies score if query entities (Genes, Proteins) match doc metadata |
 
-### Entity-Aware Re-ranking
-1.  **Extraction:** Grok extracts key entities (e.g., "Amyloid-beta") during ingestion
-2.  **Injection:** Entities are serialized as metadata in ChromaDB
-3.  **Boost:** Queries containing these entities trigger the boost, prioritizing "deep dive" documents over general mentions
-
 ---
 
 ## 📊 Performance Evaluation
@@ -197,6 +192,7 @@ Based on the evaluation benchmarks, the next phase focuses on breaking the "Reca
 *   <a id="lim-dataset"></a>**Dataset Constraints:** The current evaluation uses a closed set of 24 open-access PMC papers. Performance metrics may differ significantly on a chaotic, million-scale dataset
 *   <a id="lim-tables"></a>**Table Parsing:** The current text extraction pipeline strips out statistical tables, which often contain the core findings of clinical trials
 *   <a id="lim-ingestion"></a>**Semi-Automated Ingestion:** To optimize costs during the development phase, the Entity Extraction step currently relies on manual batch processing via the Grok web interface. In a production environment, this would be replaced by a programmatic API call (e.g., OpenAI/Anthropic) or a fine-tuned local NER model to ensure fully automated, end-to-end reproducibility. For a detailed breakdown of the prompting strategy and extraction workflow used, please refer to eda.ipynb
+
 
 
 

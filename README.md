@@ -78,7 +78,7 @@ alzheimerRAG/
 ├── data/           # PDFs, extracted texts, and entity annotations
 ├── scripts/        # Data processing and EDA scripts
 ├── src/            # Main application and retriever logic
-├── results/        # Reports and evaluation results
+├── results_pdf2text/        # Reports and evaluation results
 ├── README.md
 ├── requirements.txt
 └── pyproject.toml
@@ -141,8 +141,10 @@ The evaluation dataset was synthetically generated using a "LLM-as-a-Researcher"
 
 You can find this dataset in code from `evaluate.py`
 
-**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | Query Expansion and NER: `google/gemma-3n-e4b-it:free`
+**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | HyDE and NER from Query: `google/gemma-3n-e4b-it:free`
 
+> results of RAG on DB created by cleaning texts from PDFs via LLM
+> 
 | Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Vector + Entity Boost** 🏆 | **0.816** | **0.410** | **0.706** | **0.579** | **9.80** |
@@ -154,11 +156,13 @@ You can find this dataset in code from `evaluate.py`
 2. **HyDE is noisy:** Using hypothetical embeddings worsened metrics due to hallucinations in the biomedical context
 3. **Recall Ceiling:** The identical recall ceiling indicates a bottleneck in the ingestion stage rather than retrieval
 
-After implementing **Docling** to process PDFs, the system achieved a massive leap in **Faithfulness** and **Recall** with same **Infrastructure**
+But after implementing **Docling** to process PDFs, the system achieved a massive leap in **Faithfulness** and **Recall** with same **Infrastructure**
 
+> results of RAG on DB created by .md files via Docling
+> 
 | Architecture | Faithfulness | Relevancy | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: |
-| **Vector + Entity Boost** | 0.935 | **0.709** | 0.789 | **8.50** |
+| **Vector + Entity Boost** 🏆 | 0.935 | **0.709** | 0.789 | **8.50** |
 | **Hybrid + Entity Boost** | 0.938 | 0.682 | 0.778 | 14.94 |
 | **Hybrid + HyDE + Entity Boost** 🏆 | **0.956** | 0.614 | **0.895** | 19.33 |
 
@@ -170,7 +174,6 @@ After implementing **Docling** to process PDFs, the system achieved a massive le
 ---
 
 ## 🔮 Future Roadmap
-## 🔮 Future Roadmap
 *   🧪 **Domain-Specific Re-ranking:** Integrating `cross-encoders` trained on PubMed to further refine the Top-K
 *   🌐 **GraphRAG:** Transitioning to a knowledge-graph-based retrieval to map complex gene-protein-disease pathways
 *   🛠️ **Automated NER Pipeline:** Full integration of the Entity Extraction step into the ingestion workflow via [MARCUS](https://chemrxiv.org/engage/chemrxiv/article-details/686b86cb1a8f9bdab5017104) or specialized LLMs
@@ -181,8 +184,8 @@ After implementing **Docling** to process PDFs, the system achieved a massive le
 <details>
 <summary>Click to expand</summary>
 
-*   **Dataset Constraints:** The evaluation was performed on a network of 24 papers. The behaviour may change on million-scale samples
-*   **Semi-Automated Ingestion:** Entity extraction is currently implemented via Google Colab to make it fast; a full transition to API and server is planned
+*   **Pilot Dataset Scale:** The current evaluation was performed on a high-quality pilot network of 24 papers. While the architecture is scalable, behavior may shift when moving to million-scale document collections (requiring HNSW or DiskANN indexing)
+*   **Distributed Ingestion Workflow:** To maintain high performance without local GPU costs, document parsing (via Docling) is currently performed in a Google Colab environment. A unified, server-side ingestion API is planned for the next release
 
 </details>
 
@@ -194,6 +197,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

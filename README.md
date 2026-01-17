@@ -104,7 +104,7 @@ graph TD
     F --> G
     
     G --> H[Top-K Context]
-    H --> I[Generator: Gemma-2-27b]
+    H --> I[Generator: gemma-3-27b-it]
     I --> J[Precise Biological Answer]
 ```
 
@@ -119,7 +119,7 @@ $$
 
 | Component | Implementation | Why is it needed? |
 | :--- | :--- | :--- |
-| **S_vec** 🟢 | `NeuML/pubmedbert` | Captures conceptual similarity ("meaning") |
+| **S_vec** 🟢 | `NeuML/pubmedbert-base-embeddings` | Captures conceptual similarity ("meaning") |
 | **S_bm25** 🔵 | **BM25Okapi** | Ensures exact term matching |
 | **Boost** ⚡ | Metadata Injection | Multiplies the score if entities from the query are present in the metadata |
 
@@ -131,7 +131,7 @@ The evaluation dataset was synthetically generated using a "LLM-as-a-Researcher"
 
 You can find this dataset in code from `evaluate.py`
 
-**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-2-27b-it` | Query Expansion: `qwen3-4b`
+**Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | Query Expansion: `qwen3-4b`
 
 | Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -172,6 +172,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

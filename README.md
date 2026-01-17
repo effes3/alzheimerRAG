@@ -9,7 +9,7 @@
 **A high-precision search tool for biomedical literature**  
 Solves the **specificity-recall trade-off** problem (e.g., distinguishing between *APOE3* and *APOE4*) using metadata-based re-ranking and a hybrid search architecture
 
-[Demo](#-demo-quick-look) • [Quick start](#-quick-start) • [Architecture](#-retrieval-architecture) • [Results](#-performance-evaluation)
+[Demo](#-demo-quick-look) • [Quick start](#-quick-start) • [Architecture](#-retrieval-architecture) • [Results](#-performance-evaluation-results10)
 
 </div>
 
@@ -136,3 +136,4 @@ $$
 *   **Semi-Automated Ingestion:** Entity extraction is currently implemented via the Grok web interface; a full transition to API is planned
 
 </details>
+

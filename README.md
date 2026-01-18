@@ -48,6 +48,7 @@ I use `uv` for deterministic environment assembly
 git clone https://github.com/effes3/alzheimerRAG.git
 cd alzheimerRAG
 uv sync
+cp .env.example .env # After copying it change OpenRouter API KEY to yours
 sh scripts/download_db.sh # Automatic loading of vector database from Hugging Face (64MB)
 # If you want to make your own DB use this: uv run python src/chromadb_builder.py
 uv run streamlit run src/app.py
@@ -197,6 +198,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

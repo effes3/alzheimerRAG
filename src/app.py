@@ -1,6 +1,5 @@
 import streamlit as st
 from pathlib import Path
-import os
 from dotenv import load_dotenv
 from rag_agent import AlzheimerRAGAgent
 

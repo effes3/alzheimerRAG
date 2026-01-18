@@ -43,7 +43,7 @@ class AlzheimerRAGAgent:
         
         self.model_name = model_name or os.getenv('RAG_MODEL_NAME', 'google/gemma-3-27b-it:free')
         self.hyde_model_name = os.getenv('HYDE_MODEL', 'qwen/qwen3-4b:free')
-        
+        self.fast_llm_name = os.getenv('ENTITY_MODEL', 'google/gemma-3n-e4b-it:free')
         self.k_results = k_results if k_results is not None else int(os.getenv('RETRIEVAL_K', 5))
         self.alpha = alpha if alpha is not None else float(os.getenv('RETRIEVAL_ALPHA', 0.7))
         
@@ -86,7 +86,7 @@ class AlzheimerRAGAgent:
         )
 
         self.fast_llm = ChatOpenAI(
-            model=self.hyde_model_name,
+            model=self.fast_llm_name,
             openai_api_key=os.getenv('OPENROUTER_API_KEY'),
             openai_api_base='https://openrouter.ai/api/v1',
             temperature=0.2,
@@ -181,22 +181,19 @@ class AlzheimerRAGAgent:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
     def query(self, question: str, return_sources: bool = True) -> Dict:
-        """Executes the query pipeline with retries."""
         
         print(f"\n❓ Query: {question}")
 
-        # 1. Analyze
         query_entities = self._extract_query_entities(question)
+        if self.use_hyde or True: 
+            time.sleep(10)
         search_query = question
 
-        # 2. HyDE Expansion
         if self.use_hyde:
             hypothetical_doc = self.hyde_chain.invoke(question)
             print(f"🧠 HyDE Abstract (preview): {hypothetical_doc[:80]}...")
             search_query = hypothetical_doc
 
-        # 3. Retrieve
-        # Note: We pass original entities to hybrid_search for metadata boosting
         docs = self.kb.hybrid_search(
             query=search_query, 
             k=self.k_results, 
@@ -204,7 +201,6 @@ class AlzheimerRAGAgent:
             filter_entities=query_entities
         )
 
-        # 4. Generate
         context_str = self._format_docs(docs)
         entities_str = self._extract_entities_from_docs(docs)
 

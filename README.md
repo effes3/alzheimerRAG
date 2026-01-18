@@ -20,7 +20,7 @@ Solves the **specificity-recall trade-off** problem (e.g., distinguishing betwee
 
 ## 🎬 Demo: Quick Look
 
-![Application Demo](demo.gif)  
+![Application Demo](demo_usage.gif)  
 *Query → Retrieved Papers → Entity-Aware Highlighting*
 
 ---
@@ -197,6 +197,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

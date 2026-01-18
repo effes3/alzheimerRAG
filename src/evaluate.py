@@ -18,12 +18,21 @@ import time
 import numpy as np
 load_dotenv()
 
-current_dir = Path(__file__).resolve().parent
-kb_path = current_dir.parent / "data" / "chromadb" / "with_llm"
+current_file = Path(__file__).resolve()
+PROJECT_ROOT = current_file.parent.parent 
+
+KB_PATH = PROJECT_ROOT / "data" / "chromadb" / "docling_with_entities"
+
+print(f"🔎 Project Root: {PROJECT_ROOT}")
+print(f"📂 База данных: {KB_PATH}")
+
+if not (KB_PATH / "chroma.sqlite3").exists():
+    print(f"❌ ОШИБКА: Файлы ChromaDB не найдены по пути: {KB_PATH}")
+if not (KB_PATH / "bm25_index.pkl").exists():
+    print(f"⚠️ ПРЕДУПРЕЖДЕНИЕ: Файл BM25 не найден! Гибридный поиск будет недоступен.")
 
 JUDGE_MODEL = os.getenv("JUDGE_MODEL_NAME", "openai/gpt-4o-mini")
 RAG_MODEL = os.getenv("RAG_MODEL_NAME", "google/gemma-3-27b-it:free")
-KB_PATH = "./chromadb/with_llm"
 print(f"⚖️ Evaluator Judge: {JUDGE_MODEL}")
 print(f"🧪 RAG Subject: {RAG_MODEL}")
 
@@ -36,16 +45,13 @@ judge_llm = ChatOpenAI(
 
 judge_embeddings = HuggingFaceEmbeddings(model_name="NeuML/pubmedbert-base-embeddings")
 
-current_dir = Path(__file__).parent
-kb_path = current_dir / "chromadb" / "with_llm"
-
 print("🤖 Initializing Agent...")
 agent = AlzheimerRAGAgent(
-    kb_path=str(kb_path),
+    kb_path=str(KB_PATH),
     model_name=os.getenv("RAG_MODEL_NAME"),
     use_hybrid_search=True,
     alpha=0.7,
-    k_results=3,
+    k_results=10,
     use_hyde=True
 )
 
@@ -199,7 +205,7 @@ for i in range(len(questions)):
         continue
 
     if i < len(questions) - 1:
-        wait_time = 1
+        wait_time = 15
         print(f"⏳ Sleeping for {wait_time}s to avoid RateLimit...")
         time.sleep(wait_time)
         

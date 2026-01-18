@@ -11,7 +11,6 @@ from rank_bm25 import BM25Okapi
 import pickle
 import os
 import shutil
-import torch
 
 class AlzheimerKnowledgeBase:
     def __init__(
@@ -58,6 +57,72 @@ class AlzheimerKnowledgeBase:
 
         self.load_bm25()
     
+    def build_from_markdown_with_entities(self, md_folder_path: str, entities_folder_path: str):
+            md_folder = Path(md_folder_path)
+            entities_folder = Path(entities_folder_path)
+            
+            if not md_folder.exists():
+                raise FileNotFoundError(f"Directory with MD not found: {md_folder_path}")
+            
+            md_files = list(md_folder.glob("*.md"))
+            print(f"\n📚 Downloading {len(md_files)} MD-files and searching for entities in {entities_folder.name}")
+            
+            all_documents = []
+            
+            for md_file in tqdm(md_files, desc="Processing MD + Entities"):
+                with open(md_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                article_id = md_file.stem 
+                
+                entities_list = []
+                entity_file = entities_folder / f"{article_id}.json"
+                
+                if entity_file.exists():
+                    try:
+                        with open(entity_file, 'r', encoding='utf-8') as f:
+                            ent_data = json.load(f)
+                            entities_list = ent_data.get("entities", [])
+                    except Exception as e:
+                        print(f"⚠️ Error reading entities for {article_id}: {e}")
+                else:
+                    print(f"🔍 Entities for {article_id} not found in {entity_file}")
+
+                doc = Document(
+                    page_content=content,
+                    metadata={
+                        'article_id': article_id,
+                        'entities': ', '.join(entities_list), 
+                        'entity_count': len(entities_list),
+                        'char_count': len(content),
+                        'source_type': 'docling_markdown'
+                    }
+                )
+                
+                chunks = self.text_splitter.split_documents([doc])
+                
+                for idx, chunk in enumerate(chunks):
+                    chunk.metadata['chunk_index'] = idx
+                    chunk.metadata['total_chunks'] = len(chunks)
+                    chunk.metadata['preview'] = chunk.page_content[:150] + "..."
+                
+                all_documents.extend(chunks)
+            
+            print(f"\n📦 Total chunks: {len(all_documents)}")
+            print("🏗️ Indexing in ChromaDB...")
+            self.create_vectorstore(all_documents, reset=True)
+
+            print("📝 Updating BM25...")
+            self.bm25_docs = [doc.page_content for doc in all_documents]
+            self.bm25_metadata = [doc.metadata for doc in all_documents]
+            tokenized_docs = [doc.lower().split() for doc in self.bm25_docs]
+            self.bm25 = BM25Okapi(tokenized_docs)
+            
+            bm25_path = self.persist_directory / "bm25_index.pkl"
+            with open(bm25_path, 'wb') as f:
+                pickle.dump({'bm25': self.bm25, 'docs': self.bm25_docs, 'metadata': self.bm25_metadata}, f)
+            print("✅ Done! Database with entities saved")
+
     def create_vectorstore(self, documents: List[Document], reset: bool = False):
         if reset and self.persist_directory.exists():
             shutil.rmtree(self.persist_directory)
@@ -244,7 +309,7 @@ class AlzheimerKnowledgeBase:
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).resolve().parent.parent
-    DATA_DIR = BASE_DIR / "data_processing" / "data"
+    DATA_DIR = BASE_DIR / "data" / "data_processing"
     CHROMA_DB_DIR = BASE_DIR / "data" / "chroma_db" 
     print("\n" + "="*70)
     print("🔨 BUILDING KB: WITH LLM CLEANING")

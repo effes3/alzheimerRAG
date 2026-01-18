@@ -146,7 +146,7 @@ You can find this dataset in code from `evaluate.py`
 
 **Infrastructure:** Judge: `gpt-4o-mini` | Generator: `gemma-3-27b-it` | HyDE and NER from Query: `google/gemma-3n-e4b-it:free`
 
-> results of RAG on DB created by cleaning texts from PDFs via LLM
+> Table 1. Results of RAG on DB created by cleaning texts from PDFs via LLM (the HS parameter `alpha` is 0.7)
 > 
 | Architecture | Faithfulness | Relevancy | Precision | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
@@ -161,7 +161,7 @@ You can find this dataset in code from `evaluate.py`
 
 But after implementing **Docling** to process PDFs, the system achieved a massive leap in **Faithfulness** and **Recall** with same **Infrastructure**
 
-> results of RAG on DB created by .md files via Docling
+> Table 2. Results of RAG on DB created by .md files via Docling (the HS parameter `alpha` is 0.7)
 > 
 | Architecture | Faithfulness | Relevancy | Recall | Latency (s) |
 | :--- | :---: | :---: | :---: | :---: |
@@ -174,6 +174,8 @@ But after implementing **Docling** to process PDFs, the system achieved a massiv
 2.  **Docling Effect:** Faithfulness scores above **0.93** indicate that the LLM has almost stopped hallucinating and saying 'Sorry, I can't answer this question', as it now receives perfectly structured table data
 3.  **The Specificity Win:** Metadata-based Entity Boosting ensures that *APOE4* related queries prioritize chunks explicitly tagged with that isoform
 
+> To reproduce the exact same results, or slightly different results (because of OpenRouter) from Table 2, run `evaluate.py` and adjust your code settings in lines 48-56
+>
 ---
 
 ## 🔮 Future Roadmap
@@ -200,6 +202,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

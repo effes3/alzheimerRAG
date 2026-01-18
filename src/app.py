@@ -29,7 +29,7 @@ with st.sidebar:
     alpha = st.slider("Balance (Vector <-> BM25)", 0.0, 1.0, 0.7, help="1.0 = vector only, 0.0 = keywords only")
     
     st.divider()
-    model_name = st.text_input("МLLM", value="google/gemma-3-27b-it:free")
+    model_name = st.text_input("LLM", value="google/gemma-3-27b-it:free")
     use_hyde = st.toggle("Use HyDE", value=True)
     
     st.info(f"📂 Database: `{DB_PATH.name}`")

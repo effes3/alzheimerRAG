@@ -170,7 +170,7 @@ But after implementing **Docling** to process PDFs, the system achieved a massiv
 
 **Key insights:**
 1.  **HyDE for Discovery:** Using HyDE (Hypothetical Document Embeddings) increased **Recall to ~90%**, making it the best mode for identifying hidden drug targets
-2.  **Docling Effect:** Faithfulness scores above **0.93** indicate that the LLM has almost stopped hallucinating, as it now receives perfectly structured table data
+2.  **Docling Effect:** Faithfulness scores above **0.93** indicate that the LLM has almost stopped hallucinating and saying 'Sorry, I can't answer this question', as it now receives perfectly structured table data
 3.  **The Specificity Win:** Metadata-based Entity Boosting ensures that *APOE4* related queries prioritize chunks explicitly tagged with that isoform
 
 ---

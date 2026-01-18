@@ -77,10 +77,11 @@ streamlit run src/app.py
 
 ```bash
 alzheimerRAG/
-├── data/           # PDFs, extracted texts, and entity annotations
-├── scripts/        # Data processing and EDA scripts
-├── src/            # Main application and retriever logic
-├── results_pdf2text/        # Reports and evaluation results
+├── data/                # PDFs, extracted texts, and entity annotations
+├── results_docling/     # Reports and evaluation results via Docling
+├── results_pdfplumber/  # Reports and evaluation results via pdfplumber
+├── scripts/             # Data processing and EDA scripts
+├── src/                 # Main application and retriever logic        
 ├── README.md
 ├── requirements.txt
 └── pyproject.toml
@@ -199,6 +200,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 

@@ -24,12 +24,12 @@ PROJECT_ROOT = current_file.parent.parent
 KB_PATH = PROJECT_ROOT / "data" / "chromadb" / "docling_with_entities"
 
 print(f"🔎 Project Root: {PROJECT_ROOT}")
-print(f"📂 База данных: {KB_PATH}")
+print(f"📂 Database: {KB_PATH}")
 
 if not (KB_PATH / "chroma.sqlite3").exists():
-    print(f"❌ ОШИБКА: Файлы ChromaDB не найдены по пути: {KB_PATH}")
+    print(f"❌ ERROR: ChromaDB files not found at path: {KB_PATH}")
 if not (KB_PATH / "bm25_index.pkl").exists():
-    print(f"⚠️ ПРЕДУПРЕЖДЕНИЕ: Файл BM25 не найден! Гибридный поиск будет недоступен.")
+    print(f"⚠️ WARNING: BM25 file not found! Hybrid search will be unavailable.")
 
 JUDGE_MODEL = os.getenv("JUDGE_MODEL_NAME", "openai/gpt-4o-mini")
 RAG_MODEL = os.getenv("RAG_MODEL_NAME", "google/gemma-3-27b-it:free")

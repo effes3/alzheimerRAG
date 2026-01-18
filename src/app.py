@@ -6,7 +6,6 @@ from rag_agent import AlzheimerRAGAgent
 
 load_dotenv()
 
-# Настройки путей
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "chromadb" / "docling_with_entities"
 
@@ -16,7 +15,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# Стилизация
 st.markdown("""
 <style>
     .block-container {padding-top: 2rem;}
@@ -56,17 +54,15 @@ refusal_phrase = "I am a specialized assistant for Alzheimer's research"
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Отображение истории
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
         if "sources" in message and message["sources"] and refusal_phrase not in message["content"]:
-            with st.expander("📚 Источники"):
+            with st.expander("📚 References"):
                 for s in message["sources"]:
                     st.write(f"**{s['article_id']}** (Chunk {s['chunk_index']})")
                     st.caption(s['preview'])
 
-# Логика чата
 if prompt := st.chat_input("What is APOE3?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):

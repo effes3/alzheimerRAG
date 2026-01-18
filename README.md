@@ -29,7 +29,8 @@ Solves the **specificity-recall trade-off** problem (e.g., distinguishing betwee
 
 ### 1. Prerequisites
 *   **API Keys:** Access to OpenRouter (Llama-3/Grok/Qwen and etc. models) is required
-
+*   **Google AI:** Be careful with Gemma — sometimes it doesn't work via OpenRouter API key from Russia, but you can always switch to another model in the `.env` file
+ 
 ### 2. Configuration
 ```bash
 cp .env.example .env
@@ -48,7 +49,7 @@ I use `uv` for deterministic environment assembly
 git clone https://github.com/effes3/alzheimerRAG.git
 cd alzheimerRAG
 uv sync
-cp .env.example .env # After copying it change OpenRouter API KEY to yours
+cp .env.example .env # After copying it change OpenRouter API key to yours
 sh scripts/download_db.sh # Automatic loading of vector database from Hugging Face (64MB)
 uv run streamlit run src/app.py
 ```
@@ -62,7 +63,7 @@ cd alzheimerRAG
 python -m venv .venv
 source .venv/bin/activate  # Windows: .\.venv\Scripts\activate
 pip install -r requirements.txt
-cp .env.example .env # After copying it change OpenRouter API KEY to yours
+cp .env.example .env # After copying it change OpenRouter API key to yours
 sh scripts/download_db.sh # Automatic loading of vector database from Hugging Face (64MB)
 streamlit run src/app.py
 ```
@@ -198,6 +199,7 @@ I am a chemist by education @ HSE who switched to ML engineering. My goal is to 
 *   **Olympic background:** Multiple winner of chemistry competitions, 5 sessions at the Sirius Educational Centre
 *   **ML Experience:** Graduate of T-Bank's ML programme (top 20 out of 600+ participants). The only chemist among developers from BigTech
 *   **Domain Expertise:** I understand the difference between protein isoforms not only in terms of text, but also in terms of biological function
+
 
 
 
